@@ -1,0 +1,1685 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MathSTORY Book 2 | Project KABULIG</title>
+<!-- Gumagamit ng Bookman Old Style (system font); Georgia bilang fallback kung wala -->
+<style>
+  :root{ --font-main: 'Bookman Old Style', 'URW Bookman', 'Bookman', Georgia, 'Times New Roman', serif; }
+</style>
+<style>
+  :root{
+    --navy-900:#0B1F3A;
+    --navy-800:#102a4c;
+    --navy-700:#15315C;
+    --navy-500:#1F4287;
+    --gold-500:#D4AF37;
+    --gold-300:#E8C766;
+    --gold-100:#F7E9C2;
+    --cream:#FBF8F1;
+    --success:#3FA873;
+    --success-bg:#E4F5EC;
+    --error:#D9534F;
+    --error-bg:#FBE7E6;
+    --radius:18px;
+    --shadow: 0 12px 30px rgba(11,31,58,0.18);
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:var(--font-main);
+    background:radial-gradient(circle at 20% -10%, #1c3f73 0%, var(--navy-900) 55%, #061227 100%);
+    color:var(--cream);
+    min-height:100vh;
+    overflow-x:hidden;
+  }
+  h1,h2,h3,.display{font-family:var(--font-main);}
+  button{font-family:var(--font-main);cursor:pointer;}
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  .app{
+    max-width:920px;
+    margin:0 auto;
+    min-height:100vh;
+    position:relative;
+    padding:0 18px 40px;
+  }
+
+  /* ---------- TOP BAR ---------- */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:14px 0;
+  }
+  .icon-btn{
+    width:44px;height:44px;
+    border-radius:50%;
+    border:1px solid rgba(232,199,102,0.4);
+    background:rgba(255,255,255,0.06);
+    color:var(--gold-300);
+    font-size:20px;
+    display:flex;align-items:center;justify-content:center;
+    transition:transform .15s ease, background .15s ease;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,0.14); transform:scale(1.06);}
+  .icon-btn:active{transform:scale(0.94);}
+  .icon-btn:disabled{opacity:0.3; cursor:not-allowed; transform:none;}
+  .icon-btn:disabled:hover{background:rgba(255,255,255,0.06); transform:none;}
+
+  .progress-wrap{
+    flex:1;
+    margin:0 14px;
+    height:8px;
+    background:rgba(255,255,255,0.12);
+    border-radius:8px;
+    overflow:hidden;
+  }
+  .progress-bar{
+    height:100%;
+    background:linear-gradient(90deg, var(--gold-500), var(--gold-300));
+    width:0%;
+    transition:width .4s ease;
+  }
+  .page-count{font-size:13px; color:var(--gold-300); font-weight:700; min-width:48px; text-align:right;}
+
+  /* ---------- SCREENS ---------- */
+  .screen{display:none;}
+  .screen.active{display:block; animation:fadeUp .35s ease;}
+  @keyframes fadeUp{from{opacity:0; transform:translateY(10px);} to{opacity:1; transform:translateY(0);}}
+
+  /* ---------- MathSTORY wordmark (walang basket icon) ---------- */
+  .mathstory-logo{
+    font-family:var(--font-main);
+    font-weight:800;
+    font-size:clamp(40px,9vw,64px);
+    letter-spacing:-0.01em;
+    margin:0 0 8px;
+  }
+  .mathstory-logo .ms-math{color:var(--cream);}
+  .mathstory-logo .ms-s{color:#E8C766;}
+  .mathstory-logo .ms-t{color:#7FB3D5;}
+  .mathstory-logo .ms-o{color:#E89F71;}
+  .mathstory-logo .ms-r{color:#B79FD9;}
+  .mathstory-logo .ms-y{color:#81B29A;}
+
+  /* ---------- LANDING / SIMPLE BRAND SCREENS ---------- */
+  .brand-hero{text-align:center; padding:42px 10px 10px;}
+  .landing-cover{
+    max-width:340px; width:100%; margin:0 auto 22px;
+    border-radius:16px; overflow:hidden;
+    box-shadow:0 14px 32px rgba(0,0,0,0.4);
+  }
+  .landing-cover img{width:100%; display:block;}
+  .badge{
+    display:inline-block;
+    background:rgba(212,175,55,0.15);
+    border:1px solid rgba(212,175,55,0.5);
+    color:var(--gold-300);
+    font-size:12px; font-weight:800; letter-spacing:.08em; text-transform:uppercase;
+    padding:6px 14px; border-radius:999px; margin-bottom:18px;
+  }
+  .brand-hero p.tagline{color:#cdd9ee; font-size:16.5px; max-width:480px; margin:0 auto 30px;}
+
+  .center-card{
+    max-width:560px; margin:0 auto;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:var(--radius);
+    padding:26px 24px;
+    margin-bottom:22px;
+  }
+  .center-card h3{margin:0 0 12px; color:var(--gold-300); font-size:17px;}
+  .center-card p{margin:0 0 14px; font-size:14.5px; line-height:1.6; color:#dbe4f4;}
+
+  .feature-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:18px 0 4px;}
+  .feature{
+    background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.08);
+    border-radius:12px; padding:14px 12px; font-size:13px; color:#e7edf8;
+  }
+  .feature .emoji{font-size:22px; display:block; margin-bottom:6px;}
+  .feature b{display:block; color:var(--gold-300); font-size:13px; margin-bottom:3px;}
+
+  .btn-row-center{display:flex; justify-content:center; gap:12px; flex-wrap:wrap; margin-top:6px;}
+
+  .btn-primary{
+    padding:15px 30px;
+    border:none; border-radius:12px;
+    background:linear-gradient(135deg, var(--navy-700), var(--navy-900));
+    color:var(--gold-300); font-weight:800; font-size:16px;
+    box-shadow:0 8px 20px rgba(11,31,58,0.3);
+    transition:transform .15s ease, opacity .15s ease;
+  }
+  .btn-primary.full{width:100%;}
+  .btn-primary:disabled{opacity:0.45; cursor:not-allowed;}
+  .btn-primary:not(:disabled):hover{transform:translateY(-2px);}
+
+  .btn-secondary{
+    padding:12px 18px; border-radius:10px;
+    border:2px solid rgba(232,199,102,0.5);
+    background:transparent; color:var(--gold-300);
+    font-weight:700; font-size:14px;
+  }
+  .btn-secondary:hover{background:rgba(232,199,102,0.1);}
+
+  .footer-credit{text-align:center; font-size:12px; color:#7f93b8; margin-top:26px;}
+  .footer-credit b{color:var(--gold-300);}
+  .small-note{font-size:12px; color:#b9c4dc; text-align:center; margin-top:14px;}
+
+  .step-topbar{display:flex; align-items:center; gap:12px; padding:14px 0;}
+
+  /* ---------- LOGIN FORM ---------- */
+  .form-card{
+    max-width:480px; margin:0 auto;
+    background:var(--cream); color:var(--navy-900);
+    border-radius:var(--radius); padding:26px 24px;
+    box-shadow:var(--shadow);
+  }
+  .form-card label{display:block; font-weight:800; font-size:13px; color:var(--navy-700); margin-bottom:6px; margin-top:14px;}
+  .form-card label:first-of-type{margin-top:0;}
+  .form-card input[type=text], .form-card select{
+    width:100%; padding:12px 14px; border-radius:10px;
+    border:2px solid #dfe3ea; font-size:15px; font-family:var(--font-main);
+    background:#fff; color:var(--navy-900);
+  }
+  .select-wrap{position:relative;}
+  .select-wrap::after{
+    content:"▾"; position:absolute; right:14px; top:50%; transform:translateY(-50%);
+    color:var(--navy-500); font-size:16px; pointer-events:none;
+  }
+  .form-card select{appearance:none; -webkit-appearance:none;}
+  .form-card input:focus, .form-card select:focus{outline:none; border-color:var(--gold-500);}
+
+  /* ---------- LIBRARY (listahan ng MathSTORY) ---------- */
+  .library-grid{
+    display:grid; grid-template-columns:1fr 1fr; gap:16px;
+    max-width:760px; margin:0 auto;
+  }
+  @media (max-width:600px){.library-grid{grid-template-columns:1fr;}}
+  .story-card{
+    background:var(--cream); color:var(--navy-900);
+    border-radius:16px; padding:16px; box-shadow:var(--shadow);
+    display:flex; flex-direction:column; gap:6px;
+  }
+  .story-card .thumb{
+    width:100%; aspect-ratio:3/4; border-radius:12px; overflow:hidden;
+    background:#eef1f7; margin-bottom:6px;
+  }
+  .story-card .thumb img{width:100%; height:100%; object-fit:contain; display:block; background:#eef1f7;}
+  .story-card .thumb-placeholder{
+    width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+    color:#8a93a6; font-size:28px;
+  }
+  .story-card h4{margin:0; font-size:20px; color:var(--navy-700);}
+  .story-card .meta{font-size:13px; color:#5d6b85; line-height:1.5;}
+  .story-card button{
+    margin-top:12px; align-self:flex-start;
+    border:none; border-radius:10px; padding:10px 20px;
+    background:var(--gold-500); color:var(--navy-900);
+    font-weight:800; font-size:14px;
+  }
+  .story-card.disabled{opacity:0.55;}
+  .story-card.disabled button{background:#cfd5e0; color:#7a8294; cursor:not-allowed;}
+
+  /* ---------- BOOK CARD (side-by-side) ---------- */
+  .book-card{background:var(--cream); color:var(--navy-900); border-radius:var(--radius); box-shadow:var(--shadow); padding:26px 24px;}
+  .book-columns{display:flex; gap:24px; align-items:flex-start;}
+  .col-left{flex:1.15; min-width:0;}
+  .col-right{flex:1; display:flex; flex-direction:column; align-items:center; position:sticky; top:14px;}
+  @media (max-width:720px){
+    .book-columns{flex-direction:column;}
+    .col-right{position:static; order:-1; width:100%;}
+  }
+  .image-frame{width:100%; border-radius:14px; overflow:hidden; box-shadow:0 8px 20px rgba(11,31,58,0.15); background:#eef1f7;}
+  .image-frame img{width:100%; display:block;}
+  .img-placeholder{
+    width:100%; aspect-ratio:4/3; border:2px dashed #c7cedb; border-radius:14px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    color:#8a93a6; font-size:13px; text-align:center; gap:6px; padding:10px;
+  }
+  .img-placeholder .emoji{font-size:30px;}
+  .img-caption{font-size:13px; font-style:italic; color:var(--navy-500); text-align:center; margin-top:10px; padding:0 6px;}
+
+  .story-text{font-size:16.5px; line-height:1.75; color:var(--navy-900); margin:0 0 18px;}
+
+  .mic-row{display:flex; align-items:center; gap:12px; margin-bottom:14px; flex-wrap:wrap;}
+  .mic-btn{
+    display:flex; align-items:center; gap:8px; border:none; border-radius:999px; padding:11px 20px;
+    background:linear-gradient(135deg,#1F4287,#15315C); color:#fff; font-weight:800; font-size:14px;
+    box-shadow:0 6px 16px rgba(31,66,135,0.3);
+  }
+  .mic-btn.listening{background:linear-gradient(135deg,#D9534F,#b53e3a); animation:pulse 1.1s infinite;}
+  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(217,83,79,0.5);}70%{box-shadow:0 0 0 12px rgba(217,83,79,0);}100%{box-shadow:0 0 0 0 rgba(217,83,79,0);}}
+  .mic-status{font-size:13px; color:var(--navy-500); font-weight:700;}
+  .skip-silent-btn{
+    display:flex; align-items:center; gap:8px;
+    border:2px solid var(--navy-700); background:#fff; border-radius:999px; padding:9px 20px;
+    color:var(--navy-700); font-weight:800; font-size:14px; cursor:pointer;
+  }
+  .skip-silent-btn:hover{background:#eef1f7;}
+  .skip-silent-btn:disabled{opacity:0.4; cursor:not-allowed; background:#fff;}
+  .reset-link{border:none; background:none; color:var(--navy-500); font-size:13px; font-weight:700; text-decoration:underline; padding:4px;}
+
+  .accuracy-pill{display:inline-flex; align-items:center; gap:6px; padding:6px 14px; border-radius:999px; font-weight:800; font-size:13px;}
+  .accuracy-pill.good{background:var(--success-bg); color:var(--success);}
+  .accuracy-pill.mid{background:#FFF4DD; color:#A77B12;}
+  .accuracy-pill.low{background:var(--error-bg); color:var(--error);}
+
+  .highlighted-readout{font-size:15.5px; line-height:1.8; margin-bottom:14px; padding:14px; background:#f3f1e9; border-radius:12px;}
+  .word-ok{color:var(--success); font-weight:700;}
+  .word-sub{color:#B8860B; font-weight:700; text-decoration:underline dashed #B8860B;}
+  .word-omit{color:var(--error); font-weight:700; text-decoration:line-through wavy var(--error); opacity:0.75;}
+  .legend{display:flex; flex-wrap:wrap; gap:14px; font-size:12px; color:var(--navy-700); font-weight:700; margin:10px 0 14px; padding:10px 12px; background:#f3f1e9; border-radius:10px;}
+  .legend span{display:flex; align-items:center; gap:6px;}
+  .legend .dot{width:10px; height:10px; border-radius:50%; display:inline-block;}
+  .extra-words{margin-top:10px; font-size:13px; color:var(--navy-700);}
+  .extra-words .chip{display:inline-block; background:#E7EEFB; color:#2A4A8F; border-radius:999px; padding:3px 10px; margin:3px 4px 0 0; font-weight:700; font-size:12.5px;}
+
+  .continue-row{display:flex; justify-content:flex-end; margin-top:14px;}
+  .btn-continue{
+    border:none; border-radius:12px; padding:13px 26px; background:var(--gold-500); color:var(--navy-900);
+    font-weight:800; font-size:15px; box-shadow:0 6px 16px rgba(212,175,55,0.4); transition:transform .15s ease;
+  }
+  .btn-continue:disabled{opacity:0.4; cursor:not-allowed; box-shadow:none;}
+  .btn-continue:not(:disabled):hover{transform:translateY(-2px);}
+
+  .math-problem{
+    display:flex; align-items:center; gap:10px; background:#f3f1e9; border-radius:12px; padding:14px 16px;
+    margin-bottom:10px; font-size:18px; font-weight:800; color:var(--navy-900); flex-wrap:wrap;
+  }
+  .math-problem input{
+    width:90px; padding:8px 6px; text-align:center; font-size:18px; font-weight:800;
+    border-radius:8px; border:2px solid #dfe3ea; font-family:var(--font-main);
+  }
+  .math-problem input.correct{border-color:var(--success); background:var(--success-bg); color:var(--success);}
+  .math-problem input.wrong{border-color:var(--error); background:var(--error-bg); color:var(--error);}
+  .check-btn{border:none; border-radius:10px; padding:10px 18px; background:var(--navy-700); color:#fff; font-weight:800; font-size:14px;}
+  .closing-line{font-style:italic; color:var(--navy-700); margin:16px 0 4px; font-size:15px; border-left:4px solid var(--gold-500); padding-left:12px;}
+  .discuss-box{
+    margin-top:16px; padding:14px 16px; background:#EAF2FF; border-radius:12px;
+    border-left:4px solid #2A4A8F;
+  }
+  .discuss-title-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;}
+  .discuss-title{font-weight:800; color:#2A4A8F; font-size:13.5px;}
+  .discuss-skip-btn{
+    border:none; background:none; color:#5d6b85; font-size:12px; font-weight:700;
+    text-decoration:underline; cursor:pointer;
+  }
+  .discuss-skip-btn:disabled{opacity:0.5; cursor:not-allowed;}
+  .discuss-q-item{margin-bottom:14px;}
+  .discuss-q-item:last-child{margin-bottom:0;}
+  .discuss-q-text{font-size:13.5px; font-weight:700; color:var(--navy-700); margin:0 0 6px;}
+  .discuss-reflect{
+    width:100%; min-height:60px; border-radius:8px; border:2px solid #cdd9ee;
+    padding:8px 10px; font-family:var(--font-main); font-size:13.5px; resize:vertical;
+  }
+  .discuss-skipped-note{font-size:13px; color:#5d6b85; font-style:italic; margin:0;}
+
+  .q-block{margin-bottom:22px;}
+  .q-block p.q-text{font-weight:800; font-size:15.5px; color:var(--navy-900); margin-bottom:10px;}
+  .choice-btn{
+    display:block; width:100%; text-align:left; padding:12px 14px; margin-bottom:8px;
+    border-radius:10px; border:2px solid #dfe3ea; background:#fff; color:var(--navy-900); font-size:14.5px; font-weight:700;
+  }
+  .choice-btn.selected.correct{border-color:var(--success); background:var(--success-bg); color:var(--success);}
+  .choice-btn.selected.wrong{border-color:var(--error); background:var(--error-bg); color:var(--error);}
+  textarea.reflect{width:100%; min-height:80px; border-radius:10px; border:2px solid #dfe3ea; padding:12px; font-family:var(--font-main); font-size:14.5px; resize:vertical;}
+  .dictate-btn{margin-top:8px; border:none; border-radius:999px; padding:8px 16px; font-size:13px; font-weight:800; background:#eef1f7; color:var(--navy-700);}
+  .dictate-btn.listening{background:#fde2e1; color:var(--error);}
+
+  .results-card{max-width:520px; margin:0 auto; background:var(--cream); color:var(--navy-900); border-radius:var(--radius); box-shadow:var(--shadow); padding:30px 24px; text-align:center;}
+  .stars{font-size:38px; margin:6px 0 18px; letter-spacing:6px;}
+  .score-grid{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:18px 0 22px;}
+  .score-tile{background:#f3f1e9; border-radius:14px; padding:16px 10px;}
+  .score-tile .num{font-family:var(--font-main); font-size:26px; font-weight:800; color:var(--navy-700);}
+  .score-tile .label{font-size:12px; color:#6b7585; font-weight:700; margin-top:2px;}
+  .result-actions{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-top:10px;}
+  .sending-note{font-size:12px; color:#8a93a6; margin-top:14px;}
+  .breakdown-section{margin-top:18px;}
+  .breakdown-section h4{font-size:13px; color:#6b7585; text-transform:uppercase; letter-spacing:.04em; margin:18px 0 8px;}
+  .breakdown-item{
+    display:flex; align-items:flex-start; gap:10px;
+    padding:10px 12px; border-radius:10px; margin-bottom:6px; font-size:13.5px;
+  }
+  .breakdown-item.is-correct{background:var(--success-bg);}
+  .breakdown-item.is-wrong{background:var(--error-bg);}
+  .breakdown-item .mark{font-weight:800; font-size:15px;}
+  .breakdown-item .mark.ok{color:var(--success);}
+  .breakdown-item .mark.bad{color:var(--error);}
+  .breakdown-item .detail{flex:1;}
+  .breakdown-item .detail .q{font-weight:700; color:var(--navy-900);}
+  .breakdown-item .detail .a{color:#5d6b85; font-size:12.5px; margin-top:2px;}
+  .breakdown-item .detail .a b{color:var(--navy-700);}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ============ 1. LANDING — brand intro only, walang story content ============ -->
+  <section class="screen active" id="screen-landing">
+    <div class="brand-hero">
+      <span class="badge">Project KABULIG</span>
+      <div class="landing-cover">
+        <img src="images/landing-cover-book2.png" alt="MathSTORY Book 2 — SDO Romblon">
+      </div>
+      <p class="tagline">Mga bagong interactive na kwentong may matematika — basahin nang malakas, sagutan ang mga math problem, at subukan ang iyong pag-unawa. Isang subproject ng Project KABULIG, SDO Romblon.</p>
+      <div class="btn-row-center">
+        <button class="btn-primary" id="btnGoHowto">Magpatuloy →</button>
+      </div>
+    </div>
+    <p class="footer-credit">Project KABULIG · SDO Romblon &nbsp;|&nbsp; <b>Ginawa ni Sir Dyon</b></p>
+  </section>
+
+  <!-- ============ 2. PAANO GAGAMITIN ============ -->
+  <section class="screen" id="screen-howto">
+    <div class="step-topbar">
+      <button class="icon-btn" id="btnBackToLanding" title="Bumalik">←</button>
+    </div>
+    <div class="brand-hero" style="padding-top:6px;">
+      <h2 style="margin:0 0 4px;">Paano Gagamitin ang MathSTORY?</h2>
+    </div>
+    <div class="center-card">
+      <p>Babasahin mo ang bawat pahina ng kwento — pindutin ang mikropono kapag handa ka nang magbasa, at pindutin din ito kapag tapos ka na. Sa kanang bahagi makikita ang guhit ng bawat eksena. May mga interactive math problem na kailangan mong sagutan, at sa dulo ay may mga tanong tungkol sa kwento.</p>
+      <div class="feature-grid">
+        <div class="feature"><span class="emoji">🎤</span><b>Ikaw ang Kumokontrol</b>Ikaw mismo ang pipindot kung kailan magsisimula at kailan tapos ang pagbasa.</div>
+        <div class="feature"><span class="emoji">🎨</span><b>Tama, Mali, Nilaktawan</b>Makikita ang kulay-kulay na resulta ng bawat salitang binasa.</div>
+        <div class="feature"><span class="emoji">➕</span><b>Math Checkpoints</b>Sagutan ang mga equation mula sa kwento.</div>
+        <div class="feature"><span class="emoji">🏆</span><b>Iskor sa Dulo</b>Makikita ang resulta sa pagbasa, math, at pag-unawa.</div>
+      </div>
+    </div>
+    <div class="btn-row-center">
+      <button class="btn-primary" id="btnGoLogin">Magpatuloy →</button>
+    </div>
+  </section>
+
+  <!-- ============ 3. LOG-IN (paaralan + distrito) ============ -->
+  <section class="screen" id="screen-login">
+    <div class="step-topbar">
+      <button class="icon-btn" id="btnBackToHowto" title="Bumalik">←</button>
+    </div>
+    <div class="brand-hero" style="padding-top:6px;">
+      <h2 style="margin:0 0 4px;">Bago Tayo Magsimula...</h2>
+      <p class="tagline" style="margin-bottom:0;">Walang itatanong na pangalan ng bata — paaralan at distrito lang.</p>
+    </div>
+    <div class="form-card">
+      <label for="inputSchool">Pangalan ng Paaralan</label>
+      <input type="text" id="inputSchool" placeholder="hal. Romblon Central Elem. School">
+
+      <label for="inputDistrict">Distrito</label>
+      <div class="select-wrap">
+        <select id="inputDistrict">
+          <option value="" disabled selected>Piliin ang distrito</option>
+          <option>Alcantara</option>
+          <option>Banton</option>
+          <option>Corcuera</option>
+          <option>Concepcion</option>
+          <option>Looc</option>
+          <option>San Fernando</option>
+          <option>Cajidiocan-Magdiwang</option>
+          <option>Romblon</option>
+          <option>San Andres</option>
+          <option>Odiongan North</option>
+          <option>Odiongan South</option>
+          <option>San Agustin-Santa Maria-Calatrava</option>
+          <option>San Jose-Santa Fe</option>
+        </select>
+      </div>
+      <button class="btn-primary full" id="btnGoLibrary" disabled style="margin-top:20px;">Pumili ng Kwento 📚</button>
+    </div>
+    <p class="small-note">Tip: Gamitin ang Chrome browser para gumana nang maayos ang mikropono.</p>
+  </section>
+
+  <!-- ============ 4. LIBRARY — listahan ng mga MathSTORY ============ -->
+  <section class="screen" id="screen-library">
+    <div class="step-topbar">
+      <button class="icon-btn" id="btnBackToLogin" title="Bumalik">←</button>
+    </div>
+    <div class="brand-hero" style="padding-top:6px; padding-bottom:18px;">
+      <h2 style="margin:0;">Mga MathSTORY</h2>
+      <p class="tagline" style="margin-top:6px;">Piliin ang kwentong babasahin.</p>
+    </div>
+    <div class="library-grid" id="libraryGrid"></div>
+  </section>
+
+  <!-- ============ 5. READER ============ -->
+  <section class="screen" id="screen-reader">
+    <div class="topbar">
+      <button class="icon-btn" id="btnHome" title="Bumalik sa library">🏠</button>
+      <button class="icon-btn" id="btnPrev" title="Nakaraang pahina">⬅</button>
+      <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+      <div class="page-count" id="pageCount">1/1</div>
+    </div>
+    <div id="bookSlot"></div>
+  </section>
+
+  <!-- ============ 6. RESULTS ============ -->
+  <section class="screen" id="screen-results">
+    <div class="topbar">
+      <button class="icon-btn" id="btnHome2" title="Bumalik sa unang pahina">🏠</button>
+      <div style="flex:1"></div>
+    </div>
+    <div class="results-card">
+      <h2 style="margin-top:0;">Magaling! 🎉</h2>
+      <p style="color:#6b7585;">Tapos mo na ang kwento</p>
+      <div class="stars" id="starsDisplay">⭐⭐⭐</div>
+      <div class="score-grid">
+        <div class="score-tile"><div class="num" id="scoreReading">0%</div><div class="label">Kasanayan sa Pagbasa</div></div>
+        <div class="score-tile"><div class="num" id="scoreMath">0/0</div><div class="label">Tama sa Matematika</div></div>
+        <div class="score-tile"><div class="num" id="scoreComp">0/2</div><div class="label">Pag-unawa</div></div>
+        <div class="score-tile"><div class="num" id="scoreDistrict">—</div><div class="label">Distrito</div></div>
+      </div>
+      <div id="breakdownSlot" style="text-align:left;"></div>
+      <div class="result-actions">
+        <button class="btn-secondary" id="btnRestart">🔄 Ulitin ang Kwento</button>
+        <button class="btn-secondary" id="btnBackToLibrary">📚 Ibang Kwento</button>
+        <button class="btn-secondary" id="btnHome3">🏠 Unang Pahina</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<script>
+/* ============================================================
+   CONFIG — palitan mo ito ng URL ng deployed Apps Script
+   ============================================================ */
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbycbcMqDkJe4zauIhaKs8hs7L_gRpBDBzAC91YK3C4KubnnjndzRzDkv7qXqvERwUaJ/exec";
+/* ============================================================
+   STORY CONTENT — "Ang Kwenta ni Teta"
+   ============================================================ */
+const STORY_TETA = [
+  { id:1, type:'text', img:'images/teta-page1.png',
+    caption:'Inutusan ng kanyang ina si Teta na bumili sa palengke.',
+    text:`Sa isang liblib na lugar ng Marigondon Norte, may isang batang nagngangalang Teta. Siya ay ulirang bata, masayahin, at may respeto sa mga nakatatanda. Payak lamang ang kanilang pamumuhay ngunit masaya ang kanilang pamilya. Halos lahat ng kanilang mga pangangailangan ay nakukuha lamang sa kanilang lugar. Isang umaga, inutusan si Teta ng kanyang ina na bumili sa palengke ng mga gagamiting pangsahog sa kanilang lulutuin para sa kaarawan ng kanyang butihing ama.`,
+    discuss:[
+      'Saan nakatira si Teta?',
+      'Anong uri ng pamumuhay mayroon sina Teta?',
+      'Ano ang bibilhin ni Teta sa palengke?'
+    ]
+  },
+  { id:2, type:'math', img:'images/teta-page2.png',
+    caption:'Binilhan ni Teta ang mga sangkap mula sa palengke.',
+    narration:`Binigyan siya ng kanyang ina ng dalawang libong piso (₱2000) na gagamitin niya sa pambili ng mga gulay, karne, at meryenda. Bumili siya kay Aling Lourdes ng manok sa halagang dalawang daang piso, karne ng baboy sa halagang dalawang daa't dalawampung piso, sayote na nagkakahalaga ng walumpung piso, patatas sa halagang isang daang piso, at repolyo at carrots sa halagang isang daa't apatnapung piso. Sunod na binili niya ang keyk sa halagang tatlong daa't walumpung piso at kakanin na nagkakahalaga ng limang daang piso.`,
+    problems:[
+      {label:'₱200 (manok) + ₱220 (karne) + ₱80 (sayote) + ₱100 (patatas) + ₱140 (repolyo at carrots) =', answer:740},
+      {label:'₱380 (keyk) + ₱500 (kakanin) =', answer:880}
+    ],
+    closing:'Binayaran ni Teta ang pitong daa\'t apatnapung piso kay Aling Lourdes, at ang walong daa\'t walumpung piso sa tindera ng keyk at kakanin.',
+    discuss:[
+      'Magkano ang ibinigay sa kanya ng kanyang nanay?',
+      'Ano-ano ang mga binili ni Teta sa palengke?',
+      'Magkano ang kabuuang halaga ng gulay na kanyang pinamili?'
+    ]
+  },
+  { id:3, type:'math', img:'images/teta-page3.png',
+    caption:'Pauwi na si Teta matapos mamili sa palengke.',
+    narration:`Binilang ni Teta ang perang natira sa kanya matapos bayaran ang lahat ng kanyang pinamili. Pagdating sa kanilang bahay, isang daang piso naman ang ipinambayad niya sa single — isang motorsiklong ginagamit na pampasahero.`,
+    problems:[
+      {label:'₱2000 − (₱740 + ₱880) =', answer:380},
+      {label:'₱380 − ₱100 (pamasahe) =', answer:280}
+    ],
+    closing:'Ibinigay naman kay Teta ng kanyang nanay ang animnapung piso bilang dagdag. Agad naman itong inilagay ni Teta sa kanyang alkansiya.',
+    discuss:[
+      'Magkano ang perang natira kay Teta?',
+      'Magkano na lang ang pera niya nang magbayad siya sa single?',
+      'Magkano ang inilagay ni Teta sa kanyang alkansiya?'
+    ]
+  },
+  { id:4, type:'closing', img:'images/teta-page4.png',
+    caption:'Masaya si Teta na may naipon na sa kanyang alkansiya.',
+    text:'Masaya si Teta dahil natulungan niya ang kanyang ina at nakapag-ipon pa siya para sa kanyang alkansiya.'
+  },
+  { id:5, type:'questions',
+    title:'Mga Tanong',
+    items:[
+      {q:'1. Ano ang ipinakitang katangian ni Teta sa kwento?', choices:[
+        {text:'Magalang at masunurin', correct:true},
+        {text:'Matigas ang ulo', correct:false},
+        {text:'Sakitin', correct:false}
+      ]},
+      {q:'2. Bakit pinapunta si Teta sa palengke ng kanyang nanay?', choices:[
+        {text:'Upang bumili ng sangkap para sa kaarawan ng kanyang ama', correct:true},
+        {text:'Upang magbenta ng gulay', correct:false},
+        {text:'Upang dumalaw sa kaibigan', correct:false}
+      ]},
+      {q:'3. Ano ang kahalagahan ng pagiging marunong magkwenta ng pera?', reflect:true},
+      {q:'4. Ano ang ginawa ni Teta sa perang natira sa kanya?', reflect:true},
+      {q:'5. Tama ba ang ginawa ni Teta na ilagay sa alkansiya ang perang ibinigay sa kanya ng kanyang nanay? Bakit?', reflect:true}
+    ]
+  }
+];
+
+/* ============================================================
+   STORY CONTENT — "Ang Magpipinsan"
+   ============================================================ */
+const STORY_MAGPIPINSAN = [
+  { id:1, type:'text', img:'images/magpipinsan-page1.png',
+    caption:'Nagplano ang magpipinsan na mamasyal sa Dad\'s Bukid.',
+    text:`Linggo ng hapon, ang magpipinsang Jona, Ann, Jacinth Precious, at Everly ay nagplanong mamasyal sa Dad's Bukid. Ito ay matatagpuan sa bayan ng San Andres. Narinig nila sa kanilang mga kaibigan na napakaganda ng tanawing makikita rito. Agad na nagpaalam ang magpipinsan sa kani-kanilang mga magulang at sila naman ay pinayagan. "Mag-ingat kayo at dahan-dahan lang sa pagmamaneho ng motorsiklo," ang sabi ng kanilang mga magulang. "Salamat po sa inyong paalala," sambit ng mga bata. At umalis na sila.`,
+    discuss:[
+      'Saan pumunta ang magpipinsan?',
+      'Saan ito matatagpuan?',
+      'Bakit nagpaalam ang magpipinsan sa kanilang mga magulang?',
+      'Ano ang bilin sa kanila ng kanilang mga magulang?'
+    ]
+  },
+  { id:2, type:'math', img:'images/magpipinsan-page2.png',
+    caption:'Nagbayad ng entrance fee ang magpipinsan sa Dad\'s Bukid.',
+    narration:`Pagdating nila roon ay may entrance fee na tig-dalawampung piso bawat isa. Si Jona, bilang pinakamatanda sa kanila, ay nagbigay ng dalawandaang piso sa kahera ng Dad's Bukid. "Iha, mamaya na lang ang sukli ninyo, kulang kasi ang aking barya," sabi ng kahera. Maya-maya, habang sila'y abala sa pagkuha ng larawan sa magagandang tanawin, nakaramdam sila ng uhaw. Lumapit si Jona sa kahera. "Tita, pabili po ng isang mineral water. Iyong tig-dalawampu't limang piso po ang bote. Ibawas na lang po ninyo sa sukli ko kanina," paliwanag ni Jona.`,
+    problems:[
+      {label:'5 katao × ₱20 (entrance fee bawat isa) =', answer:100}
+    ],
+    closing:'Itinabi muna ng kahera ang halaga ng tubig habang inaayos ang barya para sa sukli ni Jona.',
+    discuss:[
+      'Magkano ang entrance fee ng bawat isa?',
+      'Bakit hindi kaagad nasuklian si Jona?',
+      'Bakit si Jona lamang ang bumili ng tubig?',
+      'Magkano naman ang isang bote ng tubig?'
+    ]
+  },
+  { id:3, type:'math', img:'images/magpipinsan-page3.png',
+    caption:'Kinuha ni Jona ang kanyang sukli bago sila umalis.',
+    narration:`Nang pauwi na sila, kinuha ni Jona ang kanyang sukli. "Ang entrance fee po ay dalawampung piso ang bawat isa. Isandaang piso po ang kinuha ko kasi lima kayong lahat. Ibinawas ko na rin ang halaga ng mineral water na dalawampu't limang piso. Ang kabuuang halaga po ay isandaa't dalawampu't limang piso," paliwanag ng kahera, sabay abot ng pitumpu't limang piso. "Maraming salamat po, tita. Aalis na po kami," sagot ni Jona.`,
+    problems:[
+      {label:'₱100 (entrance fee) + ₱25 (tubig) =', answer:125},
+      {label:'₱200 − ₱125 =', answer:75}
+    ],
+    closing:'Masaya silang umuwi matapos ang isang magandang araw sa Dad\'s Bukid.',
+    discuss:[
+      'Magkano ang kabuuang halaga ng entrance fee na binayaran nila?',
+      'Magkano ang kabuuang halaga ng dapat bayaran ni Jona?',
+      'Magkano naman ang sukli na natanggap ni Jona?'
+    ]
+  },
+  { id:4, type:'questions',
+    title:'Mga Tanong',
+    items:[
+      {q:'1. Sino-sino ang magpipinsan sa kwento?', choices:[
+        {text:'Jona, Ann, Jacinth Precious, at Everly', correct:true},
+        {text:'Teta at Maria', correct:false},
+        {text:'Biboy at Potpot', correct:false}
+      ]},
+      {q:'2. Saan sila namasyal?', choices:[
+        {text:'Sa Dad\'s Bukid sa San Andres', correct:true},
+        {text:'Sa palengke', correct:false},
+        {text:'Sa paaralan', correct:false}
+      ]},
+      {q:'3. Bakit nila naisipang mamasyal dito?', reflect:true},
+      {q:'4. Kung kayo ay aalis ng bahay, nagpapaalam din ba kayo sa inyong mga magulang? Bakit?', reflect:true},
+      {q:'5. Sobra ang sukli na naibigay sa iyo ng tindera, ano ang gagawin mo? Bakit?', reflect:true}
+    ]
+  }
+];
+
+/* ============================================================
+   STORY CONTENT — "Higit pa sa Pera"
+   ============================================================ */
+const STORY_HIGITPASAPERA = [
+  { id:1, type:'text', img:'images/higitpasapera-page1.png',
+    caption:'Sumama si Biboy sa kanyang mga magulang sa niyugan.',
+    text:`Pagkokopra ang hanapbuhay ni Mang Indo. Katulong niya ang kanyang asawa na si Aling Ana. May isa silang anak, si Biboy. Maaga palang ay gising na ang mag-asawa, nagtimpla ng kape, at naghahanda nang pupunta sa niyugan na pagmamay-ari ni G. Bayani. Bago sila umalis ay nagsabi si Biboy na sasama sa kanila sa niyugan. "Maaari po ba akong sumama sa inyo, inay?" tanong ni Biboy. "Anak, kailangan mo pang sagutan ang mga modyul mo," sabi ni Aling Ana. "Nasagutan ko na po ang lahat ng aking modyul. Nakahanda na po ang mga iyon para sa pasahan sa Lunes," pagmamalaking sagot ni Biboy.`,
+    discuss:[
+      'Ano ang hanapbuhay ng mga magulang ni Biboy?',
+      'Bakit kaya gusto ni Biboy na sumama sa bukid?',
+      'Sa palagay mo, bakit pumayag ang kanyang nanay na sumama si Biboy sa bukid?'
+    ]
+  },
+  { id:2, type:'math', img:'images/higitpasapera-page2.png',
+    caption:'Binilang ni Biboy ang mga binalatang niyog sa niyugan.',
+    narration:`Pagdating sa bukid, nakita ni Biboy ang mga nakatumpok na binalatang niyog. "Ako na po ang magbibilang ng mga binalatang niyog, papa," alok niya kay Mang Indo. "Sigurado ka ba, anak? Kaya mo bang bilangin lahat ng iyan?" tanong ng ama. "Opo, kayang-kaya ko po. Magaling na po akong magbilang," sagot ni Biboy. Binilang niya ang mga niyog at hinati sa tig-iisang daan. Nakagawa siya ng anim na tig-iisang daan, apat na tig-sasampu, at walong piraso.`,
+    problems:[
+      {label:'(6 × 100) + (4 × 10) + 8 =', answer:648}
+    ],
+    closing:'"Pa, ang lahat ng binalatang niyog ay anim na raa\'t apatnapu\'t walong piraso," sabi ni Biboy.',
+    discuss:[
+      'Sa palagay mo, bakit nagsabi si Biboy na siya na lamang ang magbibilang?',
+      'Ilan ang kabuuang bilang ng niyog na nabilang ni Biboy?'
+    ]
+  },
+  { id:3, type:'math', img:'images/higitpasapera-page3.png',
+    caption:'Nalaman ni Biboy ang halagang kikitain sa kopra.',
+    narration:`"Magkano po kaya ang kikitain natin, papa?" usisa ni Biboy. "Malalaman natin sa makalawa kapag naibenta na natin ang kopra. Ang bawat kilo ngayon ng kopra ay dalawampu't tatlong piso," sagot ni Mang Indo. "Kapag mayroon ka palang dalawang daan tatlumpu't apat na kilo ng lutong kopra, ang kikitain mo ay limang libo, tatlong daan, walumpu't dalawang piso."`,
+    problems:[
+      {label:'234 kilo × ₱23 (bawat kilo) =', answer:5382}
+    ],
+    closing:'"Ang laking pera nito, itay!" ang malakas na sabi ni Biboy.',
+    discuss:[
+      'Magkano ang bawat kilo ng kopra?',
+      'Magkano ang kikitain kapag mayroon kang 234 kilo ng lutong kopra?'
+    ]
+  },
+  { id:4, type:'closing', img:'images/higitpasapera-page4.png',
+    caption:'Yakap ng magulang si Biboy matapos ang isang araw sa niyugan.',
+    text:'"Sana nga, anak. Kaya lang manggagawa lamang tayo sa niyugang ito," paliwanag ng ama. "Huwag po tayong malungkot, papa, mama. Ang mahalaga po ay may hanapbuhay po kayo," masayang sabi ni Biboy. "Tama ka, anak. Masaya rin kami na may anak kaming katulad mo na mabait, masipag mag-aral, matalino, at mapagmahal," sabay yakap sa kanilang anak.'
+  },
+  { id:5, type:'questions',
+    title:'Mga Tanong',
+    items:[
+      {q:'1. Sino-sino ang mga tauhan sa kwento?', choices:[
+        {text:'Mang Indo, Aling Ana, at Biboy', correct:true},
+        {text:'Teta at Aling Lourdes', correct:false},
+        {text:'Jona at Ann', correct:false}
+      ]},
+      {q:'2. Ano ang pinagkakakitaan ng mga magulang ni Biboy?', choices:[
+        {text:'Pagkokopra', correct:true},
+        {text:'Pagtitinda sa palengke', correct:false},
+        {text:'Pagsasaka ng bigas', correct:false}
+      ]},
+      {q:'3. Sa palagay mo, sino ang tinutukoy sa pamagat ng kwentong Higit pa sa Pera? Bakit?', reflect:true},
+      {q:'4. Kung ikaw si Biboy, hindi ka ba mahihiyang tumulong sa pagkokopra? Bakit?', reflect:true},
+      {q:'5. Paano mo naipapakita ang iyong pagmamahal sa iyong mga magulang?', reflect:true}
+    ]
+  }
+];
+
+/* ============================================================
+   STORY CONTENT — "Si Potpot ang Batang Masinop"
+   ============================================================ */
+const STORY_POTPOT = [
+  { id:1, type:'text', img:'images/potpot-page1.png',
+    caption:'Tumutulong si Potpot sa kanyang nanay sa kanilang gulayan.',
+    text:`Si Potpot ay siyam na taong gulang at kasalukuyang nasa ikatlong baitang. Kinaugalian na niyang magtabi ng pera mula sa kanyang mga binibentang gulay. Mayroon silang munting gulayan sa likod ng kanilang bahay. Tuwing araw ng Sabado, si Potpot at ang kanyang nanay ay namimitas ng bunga ng mga tanim nilang gulay gaya ng petchay, kamatis, talong, at sitaw. "Anak, halika at tulungan mo akong mamitas ng sitaw," wika ng kanyang nanay. "Dadalhin natin ang mga ito sa palengke para ibenta," dagdag pa niya. "Sige po, nanay," masiglang sagot ni Potpot.`,
+    discuss:[
+      'Sino si Potpot?',
+      'Ano ang kinaugalian ni Potpot?',
+      'Ano-anong mga gulay ang kanilang pinamitas?',
+      'Bakit nila dadalhin sa palengke ang mga gulay?'
+    ]
+  },
+  { id:2, type:'math', img:'images/potpot-page2.png',
+    caption:'Pinagbilang at pinagtali nila ang mga sitaw na napitas.',
+    narration:`Nakapitas sila ng pitumpu't limang pirasong sitaw. Limampu't pito sa mga ito ang magagandang klase na pwedeng ibenta. Hinati-hati nila ang mga sitaw at itinali — bawat tali ay tig-limang pirasong sitaw, ibebenta sa kanilang mga kapitbahay ng sampung piso kada tali. "Anak, ilang tali ang magagawa natin sa mga sitaw na magagandang klase?" tanong ng nanay ni Potpot. Hinati-hati ni Potpot ang mga sitaw sa tig-lilima bawat hati, at napansin niyang may sobra pa.`,
+    problems:[
+      {label:'57 (magagandang sitaw) ÷ 5 (bawat tali) = ilang taling buo?', answer:11}
+    ],
+    closing:'Labing-isang tali ang nagawa ni Potpot, may sobra pang dalawa.',
+    discuss:[
+      'Ilang piraso ng sitaw ang napitas nila?',
+      'Magkano ang bawat tali ng sitaw na ibebenta nila?',
+      'Bakit kaya may sobra sa mga sitaw kapag hinati sa tiglilima?'
+    ]
+  },
+  { id:3, type:'math', img:'images/potpot-page3.png',
+    caption:'Itinabi ni Potpot ang sobra sa kanyang benta.',
+    narration:`"Labing-isang tali po ang nagawa ko, inay. Pero may sobra pong dalawa," sagot ni Potpot. "Puwede ko bang itago sa aking alkansiya ang sobra sa isang daang piso sa ating benta, inay?" ang sumamo niya. "Puwede, anak. Magkano ba ang sobra sa isang daan sa ating benta?" tanong ng kanyang nanay. "Ang kabuuang tali ng sitaw po ay labing-isa. Bawat tali ay ibebenta ko ng sampung piso," paliwanag ni Potpot.`,
+    problems:[
+      {label:'11 tali × ₱10 (bawat tali) =', answer:110},
+      {label:'₱110 − ₱100 =', answer:10}
+    ],
+    closing:'Ang sampung pisong sobra ay agad inilagay ni Potpot sa kanyang alkansiya.',
+    discuss:[
+      'Magkano ang kabuuang benta nila sa sitaw?',
+      'Magkano ang sobra sa isandaan sa kanilang benta?',
+      'Bakit hinihingi ni Potpot ang sobra sa isandaan nilang benta?'
+    ]
+  },
+  { id:4, type:'closing', img:'images/potpot-page4.png',
+    caption:'Balak ni Potpot na bumili ng bagong tsinelas sa Pasko.',
+    text:'"Bakit ka ba nag-iipon, anak?" usisa ng nanay ni Potpot. "Balak ko po kasing bumili ng bagong tsinelas," sagot ni Potpot. "Sige, anak, ako na ang magpupuno kapag kulang pa ang naipon mo," tugon ng kanyang nanay. "Salamat po, inay. Balak ko pong bumili sa Pasko," nakangiting sambit ni Potpot.'
+  },
+  { id:5, type:'questions',
+    title:'Mga Tanong',
+    items:[
+      {q:'1. Ilang taon na si Potpot?', choices:[
+        {text:'Siyam na taon', correct:true},
+        {text:'Sampung taon', correct:false},
+        {text:'Walong taon', correct:false}
+      ]},
+      {q:'2. Ano-ano ang mga gulay na mayroon sa kanilang munting gulayan?', choices:[
+        {text:'Petchay, kamatis, talong, at sitaw', correct:true},
+        {text:'Mangga at saging', correct:false},
+        {text:'Bigas at mais', correct:false}
+      ]},
+      {q:'3. Tama ba ang ginawa ni Potpot na nag-iipon dahil may gustong bilhin? Bakit?', reflect:true},
+      {q:'4. Kung ikaw si Potpot, magbebenta ka rin ba ng sitaw? Bakit?', reflect:true},
+      {q:'5. Tinawag ka ng iyong nanay upang kumain ng tanghalian, at ang nakahandang ulam sa mesa ay puro gulay. Ano ang gagawin mo? Bakit?', reflect:true}
+    ]
+  }
+];
+
+/* ============================================================
+   STORY CONTENT — "Si Baste at ang Mabait Niyang Lola"
+   ============================================================ */
+const STORY_BASTE = [
+  { id:1, type:'text', img:'images/baste-page1.png',
+    caption:'Inutusan ni Lola Basyang si Baste na bumili sa tindahan.',
+    text:`Sabado ng hapon, inutusan ni Lola Basyang si Baste na bumili sa tindahan. "Apo, bumili ka ng limang pisong asin at limang pisong mantika sa tindahan," utos ni Lola Basyang. Binigyan niya ng dalawampung piso si Baste. "Sige po, Lola," agad na tugon ni Baste sabay abot sa dalawampung piso.`,
+    discuss:[
+      'Bakit pinapunta ni Lola Basyang si Baste sa tindahan?',
+      'Ano-ano ang mga ipinabili sa kanya?',
+      'Magkano ang ibinigay ni Lola Basyang kay Baste?'
+    ]
+  },
+  { id:2, type:'math', img:'images/baste-page2.png',
+    caption:'Bumili si Baste ng asin at mantika kay Aling Biday.',
+    narration:`Nang makarating sa tindahan, agad naman siyang bumili ng mga iniutos sa kanya. "Aling Biday, pagbilhan po ng limang pisong asin at limang pisong mantika," sabi ni Baste. Inabot niya ang bayad na dalawampung piso. Habang naglalakad pauwi ay biglang kumahol ang aso, kaya mabilis siyang tumakbo. Hindi niya napansin na nahuhulog na ang ibang barya.`,
+    problems:[
+      {label:'₱5 (asin) + ₱5 (mantika) =', answer:10},
+      {label:'₱20 − ₱10 (dapat na sukli) =', answer:10}
+    ],
+    closing:'Pagdating sa bahay, iniabot ni Baste sa kanyang lola ang mga pinamili, kasama ang sukling natitira sa kanya.',
+    discuss:[
+      'Magkanong asin at mantika ang binili ni Baste?',
+      'Bakit biglang tumakbo si Baste nang kumahol ang aso?'
+    ]
+  },
+  { id:3, type:'math', img:'images/baste-page3.png',
+    caption:'Pinaliwanag ni Baste kung bakit kulang ang kanyang sukli.',
+    narration:`"Bakit kulang ng tatlong piso ang sukli, apo?" pag-uusisa ni Lola Basyang. "Baka nahulog ko po, Lola. Kanina po, habang pauwi ako, ay may kumahol na aso. Sa takot ko po ay mabilis akong tumakbo, hindi ko po namalayan na nahulog na ang ibang barya," paliwanag ni Baste habang tumutulo ang luha. "Apo, huwag ka nang umiyak. Hindi mo iyon kasalanan," sabay yakap sa apo.`,
+    problems:[
+      {label:'₱10 (dapat na sukli) − ₱3 (nahulog) =', answer:7}
+    ],
+    closing:'"Salamat po, Lola. Natatakot po kasi ako na pagagalitan mo," sabi ni Baste. "O sige, magpunas ka na ng luha mo. Maya-maya ay kakain na tayo," tugon ni Lola Basyang.',
+    discuss:[
+      'Magkano ang aktwal na sukling natanggap ni Baste?',
+      'Tama ba ang ginawa ni Lola Basyang na hindi galit kay Baste? Bakit?'
+    ]
+  },
+  { id:4, type:'questions',
+    title:'Mga Tanong',
+    items:[
+      {q:'1. Sino-sino ang mga tauhan sa kwento?', choices:[
+        {text:'Baste at Lola Basyang', correct:true},
+        {text:'Potpot at ang kanyang nanay', correct:false},
+        {text:'Biboy at Mang Indo', correct:false}
+      ]},
+      {q:'2. Ano-ano ang pinamili ni Baste?', choices:[
+        {text:'Asin at mantika', correct:true},
+        {text:'Bigas at karne', correct:false},
+        {text:'Gulay at prutas', correct:false}
+      ]},
+      {q:'3. Kung ikaw si Baste, tatakbo ka rin ba kapag nakarinig ka ng kahol ng aso? Bakit?', reflect:true},
+      {q:'4. Ano ang gagawin mo kapag nakawala ka ng pera o bagay?', reflect:true},
+      {q:'5. Bakit mahalaga ang magsabi ng totoo kapag nagkakamali tayo, tulad ng ginawa ni Baste?', reflect:true}
+    ]
+  }
+];
+
+/* ============================================================
+   STORY CONTENT — "Si Koolit Mangungupit"
+   ============================================================ */
+const STORY_KOOLIT = [
+  { id:1, type:'math', img:'images/koolit-page1.png',
+    caption:'Nakita ni Koolit ang pitaka ng kanyang tatay.',
+    narration:`Si Koolit ay mabait ngunit mayroon siyang pag-uugaling hindi maganda. Ganoon pa man ay mahal na mahal pa rin siya ng kanyang mga magulang. Isang araw, umalis ang kanyang tatay at naiwan ang kanyang pitaka. Nakita ito ni Koolit. Binuksan niya ito at may laman itong pera, kinuha niya ang dalawampung piso. Bago pa man maka-uwi ang kanyang tatay ay naibalik na ni Koolit ang pitaka.`,
+    problems:[
+      {label:'Magkano ang kinuha ni Koolit sa pitaka ng tatay niya?', answer:20}
+    ],
+    closing:'Hindi nalaman ng tatay ni Koolit na may kinuha sa kanyang pitaka.',
+    discuss:[
+      'Sa palagay mo, ano ang hindi magandang pag-uugali ni Koolit?',
+      'Tama ba ang ginawa ni Koolit? Bakit?'
+    ]
+  },
+  { id:2, type:'math', img:'images/koolit-page2.png',
+    caption:'Kinabukasan, kinuha na naman ni Koolit ang sukli ng kanyang nanay.',
+    narration:`Kinabukasan, inutusan si Koolit ng kanyang nanay na bumili sa tindahan. May sukli ito. Kinuha na naman ni Koolit ang limampung piso. Binilang ni Koolit ang kanyang nakupit — isang dalawampung piso at isang limampung piso. Tuwang-tuwa si Koolit.`,
+    problems:[
+      {label:'₱20 (kinupit kahapon) + ₱50 (kinupit ngayon) =', answer:70}
+    ],
+    closing:'Mayroon na siyang pitumpung piso, ngunit hindi niya alam ang kapahamakang naghihintay sa kanya.',
+    discuss:[
+      'Magkano ang kinupit ni Koolit sa kanyang nanay?',
+      'Magkano na ang kabuuang halaga na nakupit ni Koolit?'
+    ]
+  },
+  { id:3, type:'text', img:'images/koolit-page3.png',
+    caption:'Nahuli ni Aling Maria si Koolit na may kinupit na pera.',
+    text:`Isang araw, bumili si Koolit sa tindahan ni Aling Maria. May nakita siyang pera sa may bintana, kinuha niya ito dahil wala pa roon si Aling Maria. Pagdating ni Aling Maria, hinanap niya ang pera sa bintana. Tinanong niya si Koolit ngunit nagsinungaling ito at sinabi niyang hindi niya ito nakita. Kinapkapan ni Aling Maria si Koolit at nakita ang pera sa bulsa nito. Tinawag ni Aling Maria ang nanay ni Koolit. Matapos pangaralan ay umuwi na si Koolit at ang kanyang nanay. Simula noon ay hindi na nangupit pa si Koolit. Nalaman niyang hindi maganda ang pangungupit — kapahamakan at kahihiyan lamang ang dulot nito.`,
+    discuss:[
+      'Paano nalaman ni Aling Maria na may kinupit si Koolit?',
+      'Bakit pinatawag ang mga magulang ni Koolit?',
+      'Bakit hindi maganda ang manguha ng pera ng iba?'
+    ]
+  },
+  { id:4, type:'questions',
+    title:'Mga Tanong',
+    items:[
+      {q:'1. Sino ang bata sa kwento?', choices:[
+        {text:'Koolit', correct:true},
+        {text:'Baste', correct:false},
+        {text:'Biboy', correct:false}
+      ]},
+      {q:'2. Ano ang masamang ugali ni Koolit?', choices:[
+        {text:'Pangungupit ng pera', correct:true},
+        {text:'Pagsisinungaling tungkol sa grado', correct:false},
+        {text:'Pag-aaway sa kapatid', correct:false}
+      ]},
+      {q:'3. Sino-sino ang nakupitan ni Koolit?', reflect:true},
+      {q:'4. Ayon sa kwento, ano ang dulot ng pangungupit?', reflect:true},
+      {q:'5. Ano ang aral na makukuha mo sa kwento?', reflect:true}
+    ]
+  }
+];
+
+const LIBRARY = [
+  { key:'teta', title:'Ang Kwenta ni Teta', author:'Isinulat ni: Marjorie M. Rioja', illustrator:'Iginuhit ni: Marjorie M. Rioja', thumb:'images/teta-thumb.png', pages: STORY_TETA, available:true },
+  { key:'magpipinsan', title:'Ang Magpipinsan', author:'Isinulat ni: Sally F. Atiga', illustrator:'Iginuhit ni: Marjorie M. Rioja', thumb:'images/magpipinsan-thumb.png', pages: STORY_MAGPIPINSAN, available:true },
+  { key:'higitpasapera', title:'Higit pa sa Pera', author:'Isinulat ni: Leonalyn I. Gal', illustrator:'Iginuhit ni: Maria Czarina F. Maham', thumb:'images/higitpasapera-thumb.png', pages: STORY_HIGITPASAPERA, available:true },
+  { key:'potpot', title:'Si Potpot ang Batang Masinop', author:'Isinulat ni: Eula F. Gervacio', illustrator:'Iginuhit ni: Maria Czarina F. Maham', thumb:'images/potpot-thumb.png', pages: STORY_POTPOT, available:true },
+  { key:'baste', title:'Si Baste at ang Mabait Niyang Lola', author:'Isinulat ni: Reyneth F. Ancheta', illustrator:'Iginuhit ni: Wendell Falo', thumb:'images/baste-thumb.png', pages: STORY_BASTE, available:true },
+  { key:'koolit', title:'Si Koolit Mangungupit', author:'Isinulat ni: Jennifer D. Galicia', illustrator:'Iginuhit ni: Jennifer D. Galicia', thumb:'images/koolit-thumb.png', pages: STORY_KOOLIT, available:true }
+  // halimbawa ng paglalagay ng susunod na kwento:
+  // { key:'susunod', title:'Pangalan ng Bagong Kwento', author:'Isinulat ni: ___', illustrator:'Iginuhit ni: ___', thumb:'images/susunod-thumb.png', pages: STORY_SUSUNOD, available:true }
+];
+
+/* ============================================================
+   STATE
+   ============================================================ */
+let state = {
+  school:'', district:'',
+  activeStoryKey:'', pages:[], pageIndex:0,
+  readingScores:[],
+  mathTotal:0, mathCorrect:0,
+  comprehension:{_choiceResults:[], _reflectAnswers:{}, _choiceDetails:[]},
+  mathDetails:[],
+  discussAnswers:[]
+};
+
+/* ============================================================
+   NAVIGATION HELPERS
+   ============================================================ */
+function showScreen(id){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function resetProgress(){
+  state.activeStoryKey=''; state.pages=[]; state.pageIndex=0;
+  state.readingScores=[]; state.mathTotal=0; state.mathCorrect=0; state.mathDetails=[]; state.discussAnswers=[];
+  state.comprehension={_choiceResults:[], _reflectAnswers:{}, _choiceDetails:[]};
+}
+
+function goHome(confirmFirst){
+  if(confirmFirst && state.pageIndex>0){
+    if(!confirm('Sigurado ka bang babalik sa unang pahina? Mawawala ang progreso mo sa kwento.')) return;
+  }
+  state.school=''; state.district='';
+  resetProgress();
+  document.getElementById('inputSchool').value='';
+  document.getElementById('inputDistrict').value='';
+  document.getElementById('btnGoLibrary').disabled = true;
+  showScreen('screen-landing');
+}
+
+document.getElementById('btnGoHowto').addEventListener('click', ()=>showScreen('screen-howto'));
+document.getElementById('btnBackToLanding').addEventListener('click', ()=>showScreen('screen-landing'));
+document.getElementById('btnGoLogin').addEventListener('click', ()=>showScreen('screen-login'));
+document.getElementById('btnBackToHowto').addEventListener('click', ()=>showScreen('screen-howto'));
+document.getElementById('btnBackToLogin').addEventListener('click', ()=>showScreen('screen-login'));
+
+document.getElementById('btnHome').addEventListener('click', ()=>{
+  if(state.pageIndex>0){
+    if(!confirm('Sigurado ka bang babalik sa library? Mawawala ang progreso mo sa kwentong ito.')) return;
+  }
+  resetProgress();
+  showScreen('screen-library');
+});
+document.getElementById('btnPrev').addEventListener('click', prevPage);
+document.getElementById('btnHome2').addEventListener('click', ()=>goHome(false));
+document.getElementById('btnHome3').addEventListener('click', ()=>goHome(false));
+document.getElementById('btnBackToLibrary').addEventListener('click', ()=>{
+  resetProgress();
+  showScreen('screen-library');
+});
+
+/* ============================================================
+   LOG-IN FORM
+   ============================================================ */
+const inputSchool = document.getElementById('inputSchool');
+const inputDistrict = document.getElementById('inputDistrict');
+const btnGoLibrary = document.getElementById('btnGoLibrary');
+
+function validateForm(){
+  btnGoLibrary.disabled = !(inputSchool.value.trim().length>0 && inputDistrict.value);
+}
+inputSchool.addEventListener('input', validateForm);
+inputDistrict.addEventListener('change', validateForm);
+
+btnGoLibrary.addEventListener('click', ()=>{
+  state.school = inputSchool.value.trim();
+  state.district = inputDistrict.value;
+  renderLibrary();
+  showScreen('screen-library');
+});
+
+/* ============================================================
+   LIBRARY RENDER
+   ============================================================ */
+function renderLibrary(){
+  const grid = document.getElementById('libraryGrid');
+  grid.innerHTML = '';
+  LIBRARY.forEach(story=>{
+    const card = document.createElement('div');
+    card.className = 'story-card' + (story.available ? '' : ' disabled');
+    card.innerHTML = `
+      <div class="thumb">
+        <img src="${story.thumb}" alt="${story.title}"
+             onerror="this.onerror=null; this.parentElement.innerHTML='<div class=&quot;thumb-placeholder&quot;>📖</div>';">
+      </div>
+      <h4>${story.title}</h4>
+      <div class="meta">${story.author}<br>${story.illustrator}</div>
+      <button ${story.available ? '' : 'disabled'}>${story.available ? 'Basahin →' : 'Malapit na'}</button>`;
+    if(story.available){
+      card.querySelector('button').addEventListener('click', ()=>startStory(story));
+    }
+    grid.appendChild(card);
+  });
+}
+
+function startStory(story){
+  resetProgress();
+  state.activeStoryKey = story.key;
+  state.pages = story.pages;
+  state.pageIndex = 0;
+  showScreen('screen-reader');
+  renderPage();
+  sendLog();
+}
+
+/* ============================================================
+   SPEECH RECOGNITION HELPERS (manual start / manual stop)
+   ============================================================ */
+const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+function normalizeText(str){
+  let s = str.toLowerCase()
+    .replace(/[“”"‘’.,!?¿¡—–\-:;()]/g,' ')
+    .replace(/₱/g,'piso')
+    .replace(/\s+/g,' ')
+    .trim();
+  const COMPOUNDS = [
+    [/\blikod[\s]*bahay\b/g, 'likodbahay'],
+    [/\bdi[\s]*nabubulok\b/g, 'dinabubulok'],
+    [/\bbawat[\s]*isa\b/g, 'bawatisa'],
+    [/\bkani[\s]*kaniyang\b/g, 'kanikaniyang'],
+    [/\bhawak[\s]*kamay\b/g, 'hawakkamay'],
+    [/\btuwang[\s]*tuwa\b/g, 'tuwangtuwa'],
+    [/\bsang[\s]*ayon\b/g, 'sangayon']
+  ];
+  COMPOUNDS.forEach(([pattern, replacement])=>{ s = s.replace(pattern, replacement); });
+  return s;
+}
+
+const ALIAS_GROUPS = [
+  ['allysa','alyssa','alisa','allisa','elisa'],
+  ['leah','lea','leya'],
+  ['ibeng','ibing','ebeng'],
+  ['piso','pesos','peso'],
+  ['paw','pao','pau'],
+  ['pagong','pagon'],
+  ['kuneho','kuniho','kunejo','naeho','kuneyo'],
+  ['rabi','rabbit','ramen','robi','rabe'],
+  ['ehersisyo','hersisyon','ehersisyon','ehersisyo'],
+  ['nagyaya','naghiya','nagyayya'],
+  ['magkarera','magkarira','magkarrera'],
+  ['nangunot','nagulat'],
+  ['sumulat','sugulat'],
+  ['teta','tita','tetta'],
+  ['lourdes','lordes','lurdes'],
+  ['jona','dona','yona'],
+  ['biboy','bibboy','biboi'],
+  ['potpot','potpat','popot'],
+  ['baste','basty','bastil'],
+  ['basyang','basyan','basiang'],
+  ['koolit','kulit','kuwlit'],
+  ['kopra','copra'],
+  ['niyugan','niyogan']
+];
+function inSameAliasGroup(a,b){
+  return ALIAS_GROUPS.some(group => group.includes(a) && group.includes(b));
+}
+
+function levenshtein(a,b){
+  const m=a.length, n=b.length;
+  const dp=Array.from({length:m+1},()=>new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++) dp[i][0]=i;
+  for(let j=0;j<=n;j++) dp[0][j]=j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1] : 1+Math.min(dp[i-1][j],dp[i][j-1],dp[i-1][j-1]);
+    }
+  }
+  return dp[m][n];
+}
+function wordSimilarity(a,b){
+  if(a===b) return 1;
+  if(inSameAliasGroup(a,b)) return 1;
+  const dist = levenshtein(a,b);
+  return 1 - dist/Math.max(a.length,b.length,1);
+}
+
+function alignWords(expWords, saidWords){
+  const m = expWords.length, n = saidWords.length;
+  const dp = Array.from({length:m+1}, ()=> new Array(n+1).fill(0));
+  for(let i=0;i<=m;i++) dp[i][0] = i;
+  for(let j=0;j<=n;j++) dp[0][j] = j;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      const isMatch = wordSimilarity(expWords[i-1], saidWords[j-1]) > 0.62;
+      const diag = dp[i-1][j-1] + (isMatch ? 0 : 1);
+      const up = dp[i-1][j] + 1;
+      const left = dp[i][j-1] + 1;
+      dp[i][j] = Math.min(diag, up, left);
+    }
+  }
+  const expStatus = new Array(m).fill('omission');
+  const insertions = [];
+  let i = m, j = n;
+  while(i>0 || j>0){
+    if(i>0 && j>0){
+      const isMatch = wordSimilarity(expWords[i-1], saidWords[j-1]) > 0.62;
+      const diagCost = dp[i-1][j-1] + (isMatch ? 0 : 1);
+      if(dp[i][j] === diagCost){
+        expStatus[i-1] = isMatch ? 'correct' : 'substitution';
+        i--; j--; continue;
+      }
+    }
+    if(i>0 && dp[i][j] === dp[i-1][j] + 1){
+      expStatus[i-1] = 'omission';
+      i--; continue;
+    }
+    if(j>0 && dp[i][j] === dp[i][j-1] + 1){
+      insertions.push(saidWords[j-1]);
+      j--; continue;
+    }
+    if(i>0){ i--; } else if(j>0){ j--; } else break;
+  }
+  insertions.reverse();
+  return {expStatus, insertions};
+}
+
+/**
+ * removeConsecutiveDuplicates — kapag may natigil at na-restart ang
+ * mikropono, posibleng madoble ang ilang salita/parirala. Tatanggalin
+ * dito ang mga sunod-sunodang eksaktong paulit-ulit na salita.
+ */
+function removeConsecutiveDuplicates(words){
+  const result = [];
+  for(let i=0;i<words.length;i++){
+    if(i>0 && words[i]===words[i-1]) continue;
+    result.push(words[i]);
+  }
+  return result;
+}
+
+function compareReading(expectedText, transcript){
+  const expWords = normalizeText(expectedText).split(' ').filter(Boolean);
+  let saidWords = normalizeText(transcript).split(' ').filter(Boolean);
+  saidWords = removeConsecutiveDuplicates(saidWords);
+  const {expStatus, insertions} = alignWords(expWords, saidWords);
+  const results = expWords.map((w, idx)=>({word:w, status:expStatus[idx]}));
+  const correctCount = expStatus.filter(s=>s==='correct').length;
+  const accuracy = expWords.length ? Math.round((correctCount/expWords.length)*100) : 0;
+  return {accuracy, results, insertions};
+}
+
+function pillClass(acc){
+  if(acc>=85) return 'good';
+  if(acc>=60) return 'mid';
+  return 'low';
+}
+
+function setupMic(targetText, onFinalized){
+  const micBtn = document.getElementById('micBtn');
+  const micStatus = document.getElementById('micStatus');
+  const readoutArea = document.getElementById('readoutArea');
+
+  if(!SpeechRecognitionAPI){
+    micStatus.textContent = 'Hindi suportado ng browser na ito ang mikropono. Gamitin ang Chrome.';
+    onFinalized(true);
+    return;
+  }
+
+  let recognition = null;
+  let isListening = false;
+  let userStopped = false;
+  let finalTranscript = '';
+
+  function startListening(){
+    finalTranscript = '';
+    userStopped = false;
+    isListening = true;
+    readoutArea.innerHTML = '';
+
+    recognition = new SpeechRecognitionAPI();
+    recognition.lang = 'fil-PH';
+    recognition.continuous = true;
+    recognition.interimResults = true;
+
+    recognition.onresult = (event)=>{
+      for(let i=event.resultIndex; i<event.results.length; i++){
+        if(event.results[i].isFinal){
+          finalTranscript += event.results[i][0].transcript + ' ';
+        }
+      }
+    };
+    recognition.onerror = (e)=>{ /* ignore minor errors, e.g. no-speech */ };
+    recognition.onend = ()=>{
+      if(isListening && !userStopped){
+        try{ recognition.start(); }catch(err){}
+      }
+    };
+    recognition.start();
+
+    micBtn.classList.add('listening');
+    micBtn.textContent = '⏹ Tapos sa Pagbasa';
+    micStatus.textContent = '🔴 Nakikinig... basahin nang malakas, pindutin kapag tapos ka na.';
+  }
+
+  function stopListening(){
+    userStopped = true;
+    isListening = false;
+    if(recognition) recognition.stop();
+
+    const {accuracy, results, insertions} = compareReading(targetText, finalTranscript);
+    state.readingScores.push(accuracy);
+
+    const classMap = {correct:'word-ok', substitution:'word-sub', omission:'word-omit'};
+    const highlighted = results.map(r=>
+      `<span class="${classMap[r.status]}">${r.word}</span>`
+    ).join(' ');
+
+    const MAX_EXTRA_SHOWN = 6;
+    const shownExtras = insertions.slice(0, MAX_EXTRA_SHOWN);
+    const remainingExtras = insertions.length - shownExtras.length;
+    const extraHTML = insertions.length
+      ? `<div class="extra-words">Mga dagdag na sinabi (wala sa teksto): ${shownExtras.map(w=>`<span class="chip">${w}</span>`).join('')}${remainingExtras>0 ? `<span class="chip">+${remainingExtras} pa</span>` : ''}</div>`
+      : '';
+
+    readoutArea.innerHTML = `
+      <div class="legend">
+        <span><i class="dot" style="background:var(--success)"></i>Tama</span>
+        <span><i class="dot" style="background:#B8860B"></i>Mali ang bigkas</span>
+        <span><i class="dot" style="background:var(--error)"></i>Nilaktawan</span>
+        <span><i class="dot" style="background:#2A4A8F"></i>Dagdag na sinabi</span>
+      </div>
+      <div class="highlighted-readout">${highlighted}</div>
+      ${extraHTML}
+      <span class="accuracy-pill ${pillClass(accuracy)}">Accuracy: ${accuracy}%</span>
+      <button class="reset-link" id="micResetBtn">🔄 Basahin Muli</button>`;
+
+    micBtn.classList.remove('listening');
+    micBtn.textContent = '🎤 Magsimula sa Pagbasa';
+    micBtn.disabled = true;
+    micStatus.textContent = '';
+
+    document.getElementById('micResetBtn').addEventListener('click', ()=>{
+      micBtn.disabled = false;
+      readoutArea.innerHTML = '';
+      onFinalized(false);
+    });
+
+    onFinalized(true);
+  }
+
+  micBtn.addEventListener('click', ()=>{
+    if(!isListening){ startListening(); } else { stopListening(); }
+  });
+}
+
+/* ============================================================
+   PAGE RENDERER
+   ============================================================ */
+const bookSlot = document.getElementById('bookSlot');
+const progressBar = document.getElementById('progressBar');
+const pageCount = document.getElementById('pageCount');
+
+function updateProgress(){
+  const total = state.pages.length;
+  const pct = total>1 ? Math.round((state.pageIndex/(total-1))*100) : 100;
+  progressBar.style.width = pct+'%';
+  pageCount.textContent = (state.pageIndex+1)+'/'+total;
+  const btnPrev = document.getElementById('btnPrev');
+  if(btnPrev) btnPrev.disabled = (state.pageIndex===0);
+}
+
+function imageColumnHTML(imgSrc, caption){
+  return `
+    <div class="col-right">
+      <div class="image-frame">
+        <img src="${imgSrc}" alt="${caption}"
+             onerror="this.onerror=null; this.parentElement.outerHTML='<div class=&quot;img-placeholder&quot;><span class=&quot;emoji&quot;>🖼️</span>Ilagay ang ${imgSrc} sa /images folder</div>';">
+      </div>
+      <p class="img-caption">${caption}</p>
+    </div>`;
+}
+
+function renderPage(){
+  updateProgress();
+  const page = state.pages[state.pageIndex];
+  if(page.type==='text') return renderTextPage(page);
+  if(page.type==='math') return renderMathPage(page);
+  if(page.type==='closing') return renderClosingPage(page);
+  if(page.type==='questions') return renderQuestionsPage();
+}
+
+function nextPage(){
+  if(state.pageIndex < state.pages.length-1){
+    state.pageIndex++;
+    renderPage();
+  }
+}
+
+function prevPage(){
+  if(state.pageIndex > 0){
+    state.pageIndex--;
+    renderPage();
+  }
+}
+
+function renderClosingPage(page){
+  bookSlot.innerHTML = `
+    <div class="book-card">
+      <div class="book-columns">
+        <div class="col-left">
+          <p class="story-text" id="storyText">${page.text}</p>
+          <div class="mic-row">
+            <button class="mic-btn" id="micBtn">🎤 Magsimula sa Pagbasa</button>
+            <button class="skip-silent-btn" id="skipMicBtn">⏭ Tahimik na Pagbasa</button>
+            <span class="mic-status" id="micStatus"></span>
+          </div>
+          <div id="readoutArea"></div>
+          <div class="continue-row"><button class="btn-continue" id="btnNext" disabled>Magpatuloy →</button></div>
+        </div>
+        ${imageColumnHTML(page.img, page.caption)}
+      </div>
+    </div>`;
+  setupMic(page.text, (done)=>{ document.getElementById('btnNext').disabled = !done; });
+  document.getElementById('skipMicBtn').addEventListener('click', ()=>{
+    document.getElementById('micBtn').disabled = true;
+    document.getElementById('skipMicBtn').disabled = true;
+    document.getElementById('micStatus').textContent = '✓ Tahimik na binasa.';
+    document.getElementById('btnNext').disabled = false;
+  });
+  document.getElementById('btnNext').addEventListener('click', nextPage);
+}
+
+function discussBoxHTML(discuss){
+  if(!discuss || !discuss.length) return '';
+  const items = discuss.map((q, idx)=>`
+    <div class="discuss-q-item">
+      <p class="discuss-q-text">${q}</p>
+      <textarea class="discuss-reflect" id="discuss-${idx}" placeholder="Isulat ang sagot dito..."></textarea>
+      <button class="dictate-btn" data-target="discuss-${idx}">🎤 Magsalita</button>
+    </div>`).join('');
+  return `
+    <div class="discuss-box">
+      <div class="discuss-title-row">
+        <div class="discuss-title">🤔 Pag-isipan</div>
+        <button class="discuss-skip-btn" id="discussSkipBtn">⏭ Lumaktaw</button>
+      </div>
+      <div id="discussItemsWrap">${items}</div>
+    </div>`;
+}
+
+function wireDiscussBox(discuss){
+  if(!discuss || !discuss.length) return { skipped:false };
+  const state_ = { skipped:false };
+  document.querySelectorAll('#discussItemsWrap .dictate-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>dictateInto(btn));
+  });
+  const skipBtn = document.getElementById('discussSkipBtn');
+  if(skipBtn){
+    skipBtn.addEventListener('click', ()=>{
+      state_.skipped = true;
+      document.getElementById('discussItemsWrap').innerHTML = '<p class="discuss-skipped-note">Nilaktawan ang talakayang ito.</p>';
+      skipBtn.disabled = true;
+    });
+  }
+  return state_;
+}
+
+function captureDiscussAnswers(discuss, discussState){
+  if(!discuss || !discuss.length) return;
+  if(discussState && discussState.skipped){
+    discuss.forEach(q=>state.discussAnswers.push({question:q, answer:'', skipped:true}));
+    return;
+  }
+  discuss.forEach((q, idx)=>{
+    const ta = document.getElementById(`discuss-${idx}`);
+    const val = ta ? ta.value.trim() : '';
+    if(val) state.discussAnswers.push({question:q, answer:val, skipped:false});
+  });
+}
+
+function renderTextPage(page){
+  bookSlot.innerHTML = `
+    <div class="book-card">
+      <div class="book-columns">
+        <div class="col-left">
+          <p class="story-text" id="storyText">${page.text}</p>
+          <div class="mic-row">
+            <button class="mic-btn" id="micBtn">🎤 Magsimula sa Pagbasa</button>
+            <button class="skip-silent-btn" id="skipMicBtn">⏭ Tahimik na Pagbasa</button>
+            <span class="mic-status" id="micStatus"></span>
+          </div>
+          <div id="readoutArea"></div>
+          ${discussBoxHTML(page.discuss)}
+          <div class="continue-row"><button class="btn-continue" id="btnNext" disabled>Magpatuloy →</button></div>
+        </div>
+        ${imageColumnHTML(page.img, page.caption)}
+      </div>
+    </div>`;
+  setupMic(page.text, (done)=>{ document.getElementById('btnNext').disabled = !done; });
+  document.getElementById('skipMicBtn').addEventListener('click', ()=>{
+    document.getElementById('micBtn').disabled = true;
+    document.getElementById('skipMicBtn').disabled = true;
+    document.getElementById('micStatus').textContent = '✓ Tahimik na binasa.';
+    document.getElementById('btnNext').disabled = false;
+  });
+  const discussState = wireDiscussBox(page.discuss);
+  document.getElementById('btnNext').addEventListener('click', ()=>{
+    captureDiscussAnswers(page.discuss, discussState);
+    nextPage();
+  });
+}
+
+function renderMathPage(page){
+  bookSlot.innerHTML = `
+    <div class="book-card">
+      <div class="book-columns">
+        <div class="col-left">
+          <p class="story-text" id="storyText">${page.narration}</p>
+          <div class="mic-row">
+            <button class="mic-btn" id="micBtn">🎤 Magsimula sa Pagbasa</button>
+            <button class="skip-silent-btn" id="skipMicBtn">⏭ Tahimik na Pagbasa</button>
+            <span class="mic-status" id="micStatus"></span>
+          </div>
+          <div id="readoutArea"></div>
+          <div id="problemsArea" style="margin-top:18px;"></div>
+          <div class="closing-line" id="closingLine" style="display:none;">${page.closing}</div>
+          <div id="discussSlot"></div>
+          <div class="continue-row"><button class="btn-continue" id="btnNext" disabled>Magpatuloy →</button></div>
+        </div>
+        ${imageColumnHTML(page.img, page.caption)}
+      </div>
+    </div>`;
+
+  let readingDone = false;
+  let mathDone = false;
+  let discussState = { skipped:false };
+  function maybeEnableNext(){
+    if(readingDone && mathDone){
+      document.getElementById('closingLine').style.display = 'block';
+      document.getElementById('discussSlot').innerHTML = discussBoxHTML(page.discuss);
+      discussState = wireDiscussBox(page.discuss);
+      document.getElementById('btnNext').disabled = false;
+    }
+  }
+
+  setupMic(page.narration, (done)=>{ readingDone = done; maybeEnableNext(); });
+  document.getElementById('skipMicBtn').addEventListener('click', ()=>{
+    document.getElementById('micBtn').disabled = true;
+    document.getElementById('skipMicBtn').disabled = true;
+    document.getElementById('micStatus').textContent = '✓ Tahimik na binasa.';
+    readingDone = true;
+    maybeEnableNext();
+  });
+
+  const problemsArea = document.getElementById('problemsArea');
+  let solvedCount = 0;
+  page.problems.forEach((prob, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'math-problem';
+    row.innerHTML = `<span>${prob.label}</span><input type="number" inputmode="numeric" id="ans-${idx}"><button class="check-btn" id="check-${idx}">Tsek</button>`;
+    problemsArea.appendChild(row);
+    document.getElementById(`check-${idx}`).addEventListener('click', ()=>{
+      const input = document.getElementById(`ans-${idx}`);
+      if(input.dataset.scored === 'true') return;
+      const val = parseInt(input.value, 10);
+      const isCorrect = (val === prob.answer);
+      state.mathTotal++;
+      if(isCorrect){
+        input.classList.add('correct'); input.classList.remove('wrong'); state.mathCorrect++;
+      } else {
+        input.classList.add('wrong'); input.classList.remove('correct');
+      }
+      state.mathDetails.push({
+        label: prob.label,
+        studentAnswer: isNaN(val) ? '(walang sagot)' : val,
+        correctAnswer: prob.answer,
+        isCorrect: isCorrect
+      });
+      input.dataset.scored = 'true';
+      solvedCount++;
+      if(solvedCount === page.problems.length){ mathDone = true; maybeEnableNext(); }
+    });
+  });
+
+  document.getElementById('btnNext').addEventListener('click', ()=>{
+    captureDiscussAnswers(page.discuss, discussState);
+    nextPage();
+  });
+}
+
+function renderQuestionsPage(){
+  const page = state.pages[state.pageIndex];
+  const items = page.items || [];
+  let bodyHTML = `<h3 style="margin-top:0; color:var(--navy-700);">${page.title || 'Mga Tanong'}</h3>
+    <p style="font-size:13px; color:#6b7585; margin-top:-6px;">Pwede kang sumulat ng sagot (tahimik) o pindutin ang 🎤 para magsalita.</p>`;
+
+  items.forEach((item, idx)=>{
+    if(item.choices){
+      bodyHTML += `<div class="q-block"><p class="q-text">${item.q}</p><div id="qopts-${idx}"></div></div>`;
+    } else {
+      bodyHTML += `
+        <div class="q-block">
+          <p class="q-text">${item.q}</p>
+          <textarea class="reflect" id="reflect-${idx}" placeholder="Isulat ang sagot dito..."></textarea>
+          <button class="dictate-btn" data-target="reflect-${idx}">🎤 Magsalita</button>
+        </div>`;
+    }
+  });
+  bodyHTML += `<div class="continue-row"><button class="btn-continue" id="btnFinish">Tapos na! Tingnan ang Resulta →</button></div>`;
+
+  bookSlot.innerHTML = `<div class="book-card">${bodyHTML}</div>`;
+
+  state.comprehension._choiceResults = [];
+  state.comprehension._reflectAnswers = {};
+  state.comprehension._choiceDetails = [];
+
+  items.forEach((item, idx)=>{
+    if(item.choices){
+      renderChoices(`qopts-${idx}`, idx, item.choices, item.q);
+    }
+  });
+
+  document.querySelectorAll('.dictate-btn').forEach(btn=>{ btn.addEventListener('click', ()=>dictateInto(btn)); });
+
+  document.getElementById('btnFinish').addEventListener('click', ()=>{
+    items.forEach((item, idx)=>{
+      if(!item.choices){
+        const ta = document.getElementById(`reflect-${idx}`);
+        state.comprehension._reflectAnswers[idx] = ta ? ta.value : '';
+      }
+    });
+    showResults();
+  });
+}
+
+function renderChoices(containerId, qIdx, choices, questionText){
+  const container = document.getElementById(containerId);
+  choices.forEach(choice=>{
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.textContent = choice.text;
+    btn.addEventListener('click', ()=>{
+      if(state.comprehension._choiceResults[qIdx] !== undefined) return;
+      state.comprehension._choiceResults[qIdx] = choice.correct;
+      const correctChoice = choices.find(c=>c.correct);
+      state.comprehension._choiceDetails.push({
+        question: questionText,
+        selected: choice.text,
+        correct: correctChoice ? correctChoice.text : '',
+        isCorrect: choice.correct
+      });
+      container.querySelectorAll('.choice-btn').forEach(b=>b.disabled = true);
+      btn.classList.add('selected', choice.correct ? 'correct' : 'wrong');
+    });
+    container.appendChild(btn);
+  });
+}
+
+function dictateInto(btn){
+  if(!SpeechRecognitionAPI){ alert('Hindi suportado ng browser na ito ang mikropono. Gamitin ang Chrome.'); return; }
+  const targetId = btn.dataset.target;
+  const textarea = document.getElementById(targetId);
+
+  if(btn.dataset.listening === 'true'){
+    if(btn._recognition) btn._recognition.stop();
+    btn.dataset.listening = 'false';
+    btn.classList.remove('listening');
+    btn.textContent = '🎤 Magsalita';
+    return;
+  }
+
+  const recognition = new SpeechRecognitionAPI();
+  recognition.lang = 'fil-PH';
+  recognition.continuous = true;
+  recognition.interimResults = false;
+  btn._recognition = recognition;
+
+  let collected = '';
+  recognition.onresult = (event)=>{
+    for(let i=event.resultIndex; i<event.results.length; i++){
+      if(event.results[i].isFinal){ collected += event.results[i][0].transcript + ' '; }
+    }
+    textarea.value = ((textarea.dataset.base||'') + ' ' + collected).trim();
+  };
+  recognition.onend = ()=>{
+    if(btn.dataset.listening === 'true'){ try{ recognition.start(); }catch(e){} }
+  };
+
+  textarea.dataset.base = textarea.value;
+  btn.dataset.listening = 'true';
+  btn.classList.add('listening');
+  btn.textContent = '⏹ Tapos';
+  recognition.start();
+}
+
+/* ============================================================
+   RESULTS
+   ============================================================ */
+function buildBreakdownHTML(){
+  let html = '';
+
+  if(state.mathDetails.length){
+    html += `<div class="breakdown-section"><h4>Mga Sagot sa Matematika</h4>`;
+    state.mathDetails.forEach(d=>{
+      html += `
+        <div class="breakdown-item ${d.isCorrect ? 'is-correct' : 'is-wrong'}">
+          <span class="mark ${d.isCorrect ? 'ok' : 'bad'}">${d.isCorrect ? '✓' : '✗'}</span>
+          <div class="detail">
+            <div class="q">${d.label} ${d.studentAnswer}</div>
+            ${d.isCorrect ? '' : `<div class="a">Tamang sagot: <b>${d.correctAnswer}</b></div>`}
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  const choiceDetails = state.comprehension._choiceDetails || [];
+  if(choiceDetails.length){
+    html += `<div class="breakdown-section"><h4>Mga Sagot sa Pag-unawa</h4>`;
+    choiceDetails.forEach(d=>{
+      html += `
+        <div class="breakdown-item ${d.isCorrect ? 'is-correct' : 'is-wrong'}">
+          <span class="mark ${d.isCorrect ? 'ok' : 'bad'}">${d.isCorrect ? '✓' : '✗'}</span>
+          <div class="detail">
+            <div class="q">${d.question}</div>
+            <div class="a">Sagot ng bata: <b>${d.selected}</b>${d.isCorrect ? '' : ` — Tamang sagot: <b>${d.correct}</b>`}</div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  const reflectAnswers = state.comprehension._reflectAnswers || {};
+  const reflectEntries = Object.values(reflectAnswers).filter(v=>v && v.trim());
+  if(reflectEntries.length){
+    html += `<div class="breakdown-section"><h4>Mga Sagot sa Pagninilay (basahin ng guro)</h4>`;
+    reflectEntries.forEach(text=>{
+      html += `<div class="breakdown-item" style="background:#f3f1e9;"><div class="detail"><div class="a">${text}</div></div></div>`;
+    });
+    html += `</div>`;
+  }
+
+  if(state.discussAnswers && state.discussAnswers.length){
+    html += `<div class="breakdown-section"><h4>Mga Sagot sa Pag-isipan</h4>`;
+    state.discussAnswers.forEach(d=>{
+      html += `
+        <div class="breakdown-item" style="background:#f3f1e9;">
+          <div class="detail">
+            <div class="q">${d.question}</div>
+            <div class="a">${d.skipped ? '<i>(Nilaktawan)</i>' : d.answer}</div>
+          </div>
+        </div>`;
+    });
+    html += `</div>`;
+  }
+
+  return html;
+}
+
+function showResults(){
+  const avgReading = state.readingScores.length
+    ? Math.round(state.readingScores.reduce((a,b)=>a+b,0)/state.readingScores.length)
+    : 0;
+  const choiceResults = state.comprehension._choiceResults || [];
+  const compCorrect = choiceResults.filter(Boolean).length;
+  const compTotal = choiceResults.length;
+
+  document.getElementById('scoreReading').textContent = avgReading+'%';
+  document.getElementById('scoreMath').textContent = state.mathCorrect+'/'+state.mathTotal;
+  document.getElementById('scoreComp').textContent = compCorrect+'/'+compTotal;
+  document.getElementById('scoreDistrict').textContent = state.district;
+
+  document.getElementById('breakdownSlot').innerHTML = buildBreakdownHTML();
+
+  const combined = (avgReading/100*0.4) + (state.mathTotal? state.mathCorrect/state.mathTotal*0.4 : 0) + (compTotal? compCorrect/compTotal*0.2 : 0.2);
+  const starCount = combined>=0.85 ? 3 : combined>=0.6 ? 2 : 1;
+  document.getElementById('starsDisplay').textContent = '⭐'.repeat(starCount) + '☆'.repeat(3-starCount);
+
+  showScreen('screen-results');
+}
+
+document.getElementById('btnRestart').addEventListener('click', ()=>{
+  const savedSchool = state.school, savedDistrict = state.district, savedPages = state.pages, savedKey = state.activeStoryKey;
+  resetProgress();
+  state.school = savedSchool; state.district = savedDistrict;
+  state.pages = savedPages; state.activeStoryKey = savedKey;
+  showScreen('screen-reader');
+  renderPage();
+});
+
+/* ============================================================
+   LOGGING TO GOOGLE APPS SCRIPT
+   ============================================================ */
+/* ============================================================
+   LOGGING TO GOOGLE APPS SCRIPT — pinapaandar sa sandaling
+   pumili ng kwento ang bata (hindi na hinihintay matapos)
+   ============================================================ */
+function sendLog(){
+  if(!APPS_SCRIPT_URL || APPS_SCRIPT_URL.indexOf('PASTE_YOUR') === 0){
+    console.warn('Hindi pa nakaset ang Apps Script URL — hindi naipadala ang log.');
+    return;
+  }
+  const payload = {
+    timestamp: new Date().toISOString(),
+    school: state.school,
+    district: state.district,
+    storyTitle: state.activeStoryKey
+  };
+  fetch(APPS_SCRIPT_URL, {
+    method:'POST', mode:'no-cors',
+    headers:{'Content-Type':'text/plain;charset=utf-8'},
+    body: JSON.stringify(payload)
+  }).catch(()=>{ console.warn('Hindi naipadala ang log (walang internet?).'); });
+}
+</script>
+</body>
+</html>
